@@ -1,29 +1,29 @@
-export interface Name {
-    firstname: string;
-    lastname: string;
+export interface TName {
+    firstName: string;
+    lastName: string;
 }
 
-export interface Address {
+export interface TAddress {
     street: string;
     city: string;
     country: string;
 }
 
-export interface Order {
+export interface TOrder {
     productName: string;
     price: number;
     quantity: number;
 }
 
-export interface User {
+export interface TUser {
     userId: number;
     username: string;
-    password: string;
-    fullname: Name;
+    password?: string;
+    fullName: TName;
     age: number;
     email: string;
     isActive: boolean;
     hobbies: Array<string>;
-    address: Address;
-    orders: Array<Order>;
+    address: TAddress;
+    orders?: Array<TOrder>;
 }
