@@ -91,7 +91,7 @@ export const addSingleOrderToUserDB = async (userId: number, order: TOrder) => {
                         into: 'users',
                     },
                 },
-            ]);
+            ]); // insert order into orders array
 
             return false;
         } catch (err: any) {
@@ -134,7 +134,7 @@ export const getTotalPriceOfOrdersFromDB = async (userId: number) => {
                     },
                 },
             },
-        ]);
+        ]); // Agregation for total Price of a users order
 
         return result;
     } else {

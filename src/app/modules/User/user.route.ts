@@ -12,7 +12,7 @@ import {
 
 export const userRouter = Router();
 
-// Create user in database
+// Api Routes
 userRouter.post('/users', createUser);
 userRouter.get('/users', getAllUsers);
 userRouter.get('/users/:userId', getSingleUser);
