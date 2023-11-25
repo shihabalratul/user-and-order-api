@@ -65,7 +65,7 @@ export const getSingleUser = async (req: Request, res: Response) => {
 
         res.status(200).send({
             success: true,
-            message: 'Users fetched successfully!',
+            message: 'User fetched successfully!',
             data: userData,
         });
     } catch (err: any) {
