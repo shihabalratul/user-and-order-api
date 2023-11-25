@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Schema, model } from 'mongoose';
-import { TAddress, TName, TOrder, TUser } from './user.interface';
+import { TAddress, TName, TOrder, TUser, UserModel } from './user.interface';
+import { userMiddlewares } from './user.middleware';
 
 const nameSchema = new Schema<TName>(
     {
@@ -53,7 +54,7 @@ const orderSchema = new Schema<TOrder>({
     },
 });
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser, UserModel>(
     {
         userId: {
             type: Number,
@@ -109,22 +110,18 @@ const userSchema = new Schema<TUser>(
     },
 );
 
-//Handling error for duplicate userId and username
-userSchema.post('save', function (error: any, doc: any, next: any) {
-    if (error.code === 11000) {
-        const uniqueField = Object.keys(error.keyValue);
-        const uniqueValue = Object.values(error.keyValue);
-        next({
-            message: `${uniqueField[0]}: '${uniqueValue[0]}' is already used. Please use an unique ${uniqueField[0]}`,
-        });
+// using all the middlewares
+userMiddlewares(userSchema);
+
+// Check if user exists in the database
+userSchema.statics.userExists = async function (userId: number) {
+    const user = await User.findOne({ userId });
+
+    if (user) {
+        return true;
     } else {
-        next(error);
+        return false;
     }
-});
+};
 
-// Remove orders from the  response
-userSchema.post('save', function () {
-    this.orders = undefined;
-});
-
-export const User = model<TUser>('User', userSchema);
+export const User = model<TUser, UserModel>('User', userSchema);
