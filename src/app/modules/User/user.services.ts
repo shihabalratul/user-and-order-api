@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { TUser } from './user.interface';
+import { TOrder, TUser } from './user.interface';
 import { User } from './user.model';
 
 // Create a new user document in Mongodb
@@ -59,6 +59,84 @@ export const deleteSingleUserFromDB = async (userId: number) => {
         if (result.acknowledged !== true) {
             throw new Error('Error Deleting data please try again');
         }
+    } else {
+        throw new Error('User not found!');
+    }
+};
+
+//Add order to users orders list
+export const addSingleOrderToUserDB = async (userId: number, order: TOrder) => {
+    if (await User.userExists(userId)) {
+        try {
+            await User.aggregate([
+                {
+                    $match: {
+                        userId: userId,
+                    },
+                },
+                {
+                    $set: {
+                        orders: {
+                            $concatArrays: ['$orders', [order]],
+                        },
+                    },
+                },
+                {
+                    $project: {
+                        orders: 1,
+                    },
+                },
+                {
+                    $merge: {
+                        into: 'users',
+                    },
+                },
+            ]);
+
+            return false;
+        } catch (err: any) {
+            return {
+                error: true,
+                message: err.message,
+                description: err,
+            };
+        }
+    } else {
+        throw new Error('User not found!');
+    }
+};
+
+// Get all the orders array from a user
+export const getAllOrderFromUserDB = async (userId: number) => {
+    if (await User.userExists(userId)) {
+        const result = User.find({ userId }).select('orders');
+
+        return result;
+    } else {
+        throw new Error('User not found!');
+    }
+};
+
+// Get Total Price of orders for a Specific user
+export const getTotalPriceOfOrdersFromDB = async (userId: number) => {
+    if (await User.userExists(userId)) {
+        const result = User.aggregate([
+            {
+                $match: {
+                    userId,
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    totalPrice: {
+                        $sum: '$orders.price',
+                    },
+                },
+            },
+        ]);
+
+        return result;
     } else {
         throw new Error('User not found!');
     }

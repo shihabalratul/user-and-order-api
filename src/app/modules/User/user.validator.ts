@@ -27,7 +27,7 @@ const AddressValidationSchema = z.object({
     country: z.string(),
 });
 
-const OrderValidationSchema = z.object({
+export const OrderValidationSchema = z.object({
     productName: z.string(),
     price: z.number().positive({ message: 'Price must be a positive number.' }),
     quantity: z
